@@ -1,0 +1,66 @@
+{% extends "templates/base.html" %}
+
+{% block content %}
+<div class="form">
+<form method="post" action="{% if action %}{{ action }}{% else %}/admin/post/create{% endif %}">
+    <p>
+        <label for="title">Title</label>
+        <input type="text" class="text" name="title" id="title" value="{% if post %}{{ post.title }}{% endif %}" />
+    </p>
+    <p>
+        <label for="slug">Slug</label>
+        <input type="text" class="text" name="slug" id="slug" value="{{ slug_default }}{% if post %}{{ post.slug }}{% endif %}"/>
+        {% if slug_error %}<p style="color:#aa0000">Slug can only contain alpha-numerics, hyphen, and underscore.</p>{% endif %}
+    </p>
+    <p>
+        <label for="body">Body</label>
+        <textarea name="body" id="body">{% if post %}{% if post.body %}{{ post.body }}{% endif %}{% endif %}</textarea>
+    </p>
+        <label for="tags">Tags</label>
+        <input type="text" class="text" name="tags" id="tags" value="{% if post %}{% for tag in post.tags %}{{ tag }} {% endfor %}{% endif %}" />
+    </p>
+        <input type="submit" name="submit" value="Submit">
+        <input type="submit" name="submit" value="Preview">
+    </p>
+    <h3>Help:</h3>
+	<ul>
+		<li>Slug gets auto-generated when left empty.</li>
+        <li>Slug can only contain alpha-numerics, hyphen, and underscore.</li>
+        <li>Two slug prefixes are allowed:  '!' for sidebar listing and '/' for root page.</li>
+        <li>Tags are separated by spaces.</li>
+        <li>Delete entry by saving with blank title and body.</li>           
+        <li>Body formatting with html and <a href="http://en.wikipedia.org/wiki/Markdown">Markdown</a>.</li>
+        <ul>
+            <li>first-level heading: underline with ========</li>
+            <li>second-level heading: underline with --------</li>
+            <li>links: [title](url)</li>
+            <li>wiki links: [title](root page slug)</li>
+            <li>images: ![title](url)</li>
+            <li>bold: **bold words**</li>
+            <li>italics: *italic words*</li>
+            <li>flickr photo pages get embedded automatically</li>
+            <li>E.g: http://www.flickr.com/photos/stfnix/8506328751:s</li>
+            <li>flickr links can have postfixes for size selection, e.g: <p> :q for 150px, :s for 240px, :z for 640px, :c for 800px</li>
+        </ul>           
+	</ul>
+</form>
+</div>
+
+{% if post %}
+    <h3 style="margin-left:10px">Preview:</h3>
+    <div class="post">
+		{% if user_is_admin %}
+			<div style="float:right">
+				<span class="edit"><a href="{{ post.get_edit_url() }}">edit post</a></span>
+			</div>
+		{% endif %}
+		<div class="tags" style="float:right">{% for tag in post.tags %}<span class="tag"><a href="/blog/tag/{{ tag }}">{{ tag }}</span></a>{% endfor %}</div>
+		<div class="date" style="float:right">{{ post.pub_date.strftime('%d %b %Y') }}</div>
+		<div class="title">
+			<span class="title"><a href="{{ post.get_absolute_url() }}">{{ post.title }}</a></span>
+		</div>	
+        <div class="body">{{ post.body_html }}</div>
+    </div>
+{% endif %}
+
+{% endblock %}

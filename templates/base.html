@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>{% block title %}{% endblock %} | {{ settings.title }}</title>
+<script src="/static/js/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" media="screen" href="/static/css/style.css">
+<script type="text/javascript">
+  $(document).ready(function(){
+    // set max-width to native image resolution
+    $('div.posts img').each(function(index){
+      var native_width = $(this).width();
+      $(this).css({'width': '100%', 'max-width':native_width+'px'})
+    });
+    beResponsive();
+  });
+  $(window).resize(beResponsive);
+
+  function beResponsive() {
+    if ($(document).width() <= 480) {
+      $('#archive-list').hide();
+      $('#tag-list').hide();
+      $('#sidebar').removeClass('sidebar_big_screen');
+      $('#sidebar').addClass('sidebar_small_screen');
+      $('#header').removeClass('header');
+      $('#header').addClass('header_small_screen');
+      $('#posts').removeClass('posts');
+      $('#posts').addClass('posts_small_screen');
+      $('#page_header').removeClass('page_header_big_screen');
+      $('#page_header').addClass('page_header_small_screen');
+    } else {
+      $('#archive-list').show();
+      $('#tag-list').show();
+      $('#sidebar').removeClass('sidebar_small_screen');
+      $('#sidebar').addClass('sidebar_big_screen');     
+      $('#header').removeClass('header_small_screen');
+      $('#header').addClass('header');
+      $('#posts').removeClass('posts_small_screen');
+      $('#posts').addClass('posts');
+      $('#page_header').removeClass('page_header_small_screen');
+      $('#page_header').addClass('page_header_big_screen');      
+    }
+  }
+</script>
+</head>
+
+<body>
+
+<div class="container">
+
+<div id="header" class="header">
+	<a href="/" class="logo"><img src="/static/images/logo.png" style="width:30%; max-width:200px"></a>
+</div>
+
+<div id="sidebar" class="sidebar sidebar_big_screen">
+	<p>
+	  <a href="/admin/post/create">Write a new post!</a>		
+	</p>
+  {% if settings.sidebar_show_entry_pages and page_list %}
+  <div id="page-list">
+      <h3>Pages</h3>
+      <ul>
+          {% for page in page_list %}
+          <li><a href="{{ page.url }}">{{ page.title }}</a></li>
+          {% endfor %}
+      </ul>
+  </div>
+  {% endif %}
+  {% if settings.sidebar_show_archive %}{% if archive_list %}
+  <div id="archive-list">
+      <h3>Archives</h3>
+      <ul>
+          {% for month in reversed(archive_list) %}
+          <li><a href="{{ month.url }}">{{ month.date.strftime('%b %Y') }}</a> ({{ month.count }})</li>
+          {% endfor %}
+      </ul>
+  </div>
+  {% endif %}{% endif %}
+  {% if settings.sidebar_show_tags %}{% if tag_list %}
+  <div id="tag-list">
+      <h3>Tags</h3>
+      <ul>
+          {% for tag in tag_list %}
+          <li><a href="{{ tag.url }}">{{ tag.tag }}</a> ({{ tag.count }})</li>
+          {% endfor %}
+      </ul>
+  </div>
+  {% endif %}{% endif %}
+</div>
+
+{% if page_description %}
+    <div id="page_header" class="page_header_big_screen">{{ page_description }}</div>
+{% endif %}		
+
+<div id="posts" class="posts">
+{% block content %}{% endblock %}
+</div>
+	
+<div class="push"></div>
+</div>
+
+
+<div class="footer">
+	<table>
+	<tr>
+	<td style="width:50px">
+		<a class="menu" href="http://labs.nortd.com/"><img src="/static/images/nortd-cupid-hearts-darkgray.png" width="40"></a>
+	</td>
+	<td>
+		<div><a class="menu" href="http://labs.nortd.com/">Nortd Labs</a> is a research and development studio.</div>
+		<div>We generate work in the area of art, architecture, and system design.</div>		
+	</td>
+	</tr>
+	</table>
+</div>
+
+{% if settings.google_analytics %}
+    <script type="text/javascript">
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+        try{
+            var pageTracker = _gat._getTracker("{{ settings.google_analytics }}");
+            pageTracker._trackPageview();
+        } catch(err) {}
+    </script>
+{% endif %}	
+
+</body>
+</html>

@@ -1,0 +1,28 @@
+{% extends "templates/base.html" %}
+
+{% block content %}
+
+{% if import_report %}
+
+<p>
+entries ({{ entried_imported }}) imported
+</p>
+<p>
+{{debug_text}}
+</p>
+
+{% else %}
+<p>
+<a href="/admin/import?deleteall=1">delete all</a>
+</p>
+
+<form action="{{ action_url }}" enctype="multipart/form-data" method="POST"> 
+<input type="file" name="atom" size="40" /> 
+<input type="submit" value="upload" /> 
+</form>  
+
+{% endif %}
+
+
+
+{% endblock %}
